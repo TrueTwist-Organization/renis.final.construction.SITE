@@ -1,0 +1,204 @@
+/* PANNAMA PORTAL - Premium Admin Styles */
+
+:root {
+    --gold: #d4a853;
+    --gold-light: #f0d48a;
+    --dark: #050508;
+    --black: #000000;
+    --glass: rgba(255,255,255,0.03);
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--black);
+    color: #fff;
+    font-family: var(--font-body);
+    margin: 0;
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background: #0a0a0f;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 280px;
+    padding: 60px;
+    width: calc(100% - 280px);
+    min-height: 100vh;
+    transition: all 0.3s ease;
+}
+
+/* Mobile Toggle */
+.mobile-nav-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(212, 168, 83, 0.3);
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width: 991px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 250px;
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0;
+        padding: 80px 20px 40px 20px;
+        width: 100%;
+    }
+    .mobile-nav-toggle {
+        display: flex;
+    }
+    
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 20px !important;
+    }
+    
+    .btn-gold.rounded-pill {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .custom-table thead th, .custom-table tbody td {
+        padding: 15px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+.nav-logo {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.nav-logo span {
+    color: var(--gold);
+    font-weight: 400;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+}
+
+.nav-item-custom {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    border-radius: 12px;
+    margin-bottom: 5px;
+    transition: 0.3s;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.nav-item-custom i {
+    margin-right: 15px;
+    font-size: 1.1rem;
+}
+
+.nav-item-custom:hover, .nav-item-custom.active {
+    background: rgba(212, 168, 83, 0.1);
+    color: var(--gold);
+}
+
+/* Glass Card */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Custom Table */
+.custom-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.custom-table thead th {
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--gold);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 20px;
+}
+
+.custom-table tbody td {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    vertical-align: middle;
+}
+
+.custom-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Buttons */
+.btn-gold {
+    display: inline-flex;
+    align-items: center;
+    background: var(--gold);
+    border: none;
+    color: #000;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: 0.3s;
+}
+
+.btn-gold:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+}
+
+.text-gold {
+    color: var(--gold);
+}
+
+/* Modal Styling */
+.modal-content {
+    background: #0a0a0f !important;
+    border-radius: 20px;
+    border: 1px solid rgba(212, 168, 83, 0.2);
+}
+
+.form-control:focus {
+    background-color: #000;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 0.25rem rgba(212, 168, 83, 0.25);
+    color: #fff;
+}

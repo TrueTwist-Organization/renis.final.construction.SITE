@@ -1,0 +1,13 @@
+{
+  "name": "pannama-elegance",
+  "version": "1.0.0",
+  "description": "Constructation site 2.2 final",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

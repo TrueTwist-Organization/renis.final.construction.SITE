@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANNAMA | Customer Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button class="mobile-nav-toggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="nav-logo">PANNAMA <span>ADMIN</span></div>
+        <div class="mt-4">
+            <a href="admin-dashboard.html" class="nav-item-custom"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            <a href="admin-customers.html" class="nav-item-custom active"><i class="bi bi-people-fill"></i> Customers</a>
+        </div>
+        <div class="mt-auto mb-4">
+            <a href="admin-login.html" class="nav-item-custom text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 style="color:var(--gold); font-family:var(--font-heading);">CLIENT DATABASE</h2>
+            <button class="btn btn-gold rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                <i class="bi bi-plus-lg me-2"></i> Register New Client
+            </button>
+        </div>
+
+        <div class="glass-card overflow-hidden">
+            <div class="table-responsive">
+                <table class="table custom-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID & Name</th>
+                            <th>Contact Info</th>
+                            <th>Total Invested</th>
+                            <th>Next Billing Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientListBody">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Collect Payment -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Record Payment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="paymentForm">
+                        <input type="hidden" id="payClientIndex">
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">PAYMENT AMOUNT (₹)</label>
+                            <input type="number" id="payAmount" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">PAYMENT DATE</label>
+                            <input type="date" id="payDate" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">PAYMENT TYPE (CYCLE)</label>
+                            <select id="payType" class="form-control bg-black text-white border-secondary" onchange="calculateNextBilling()">
+                                <option value="1">1 Month</option>
+                                <option value="6">6 Months</option>
+                                <option value="12">1 Year</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">NEXT BILLING DATE</label>
+                            <input type="date" id="nextBillingDate" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100 py-3 mt-3">CONFIRM PAYMENT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add/Edit Client -->
+    <div class="modal fade" id="addClientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Client Registration</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="clientForm">
+                        <input type="hidden" id="editIndex">
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">FULL NAME</label>
+                            <input type="text" id="clientName" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">USER ID (For Login)</label>
+                            <input type="text" id="clientId" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label opacity-50 small">PASSWORD</label>
+                            <input type="password" id="clientPass" class="form-control bg-black text-white border-secondary" required>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100 py-3 mt-3">SAVE CLIENT PROFILE</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Payment History -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="historyTitle">Payment History</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="table custom-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyListBody">
+                                <!-- History Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+    <script>
+        const STORAGE_KEY = 'pannama_customers_final';
+        let customers = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        function renderClients() {
+            const body = document.getElementById('clientListBody');
+            body.innerHTML = '';
+            customers.forEach((c, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td onclick="viewHistory(${index})" style="cursor: pointer;">
+                        <div class="fw-bold text-gold">${c.name}</div>
+                        <div class="small opacity-50">#${c.id}</div>
+                    </td>
+                    <td>${c.id}@elegance.com</td>
+                    <td class="text-gold fw-bold">₹${(c.totalPaid || 0).toLocaleString('en-IN')}</td>
+                    <td class="small ${c.nextBilling ? 'text-info' : 'opacity-50'}">${c.nextBilling ? new Date(c.nextBilling).toLocaleDateString('en-IN') : 'N/A'}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-success me-2" onclick="openPaymentModal(${index})" title="Collect Payment"><i class="bi bi-currency-rupee"></i></button>
+                        <button class="btn btn-sm btn-outline-light me-2" onclick="editClient(${index})"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteClient(${index})"><i class="bi bi-trash-fill"></i></button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        document.getElementById('clientForm').onsubmit = (e) => {
+            e.preventDefault();
+            const newClient = {
+                name: document.getElementById('clientName').value,
+                id: document.getElementById('clientId').value,
+                pass: document.getElementById('clientPass').value,
+                totalPaid: 0,
+                nextBilling: null,
+                history: []
+            };
+            customers.push(newClient);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+            location.reload();
+        };
+
+        const payModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+
+        function openPaymentModal(idx) {
+            document.getElementById('payClientIndex').value = idx;
+            document.getElementById('payAmount').value = '';
+            document.getElementById('payDate').valueAsDate = new Date();
+            calculateNextBilling();
+            payModal.show();
+        }
+
+        function calculateNextBilling() {
+            const date = new Date(document.getElementById('payDate').value);
+            const months = parseInt(document.getElementById('payType').value);
+            if (!isNaN(date.getTime())) {
+                date.setMonth(date.getMonth() + months);
+                document.getElementById('nextBillingDate').valueAsDate = date;
+            }
+        }
+
+        document.getElementById('payDate').onchange = calculateNextBilling;
+
+        document.getElementById('paymentForm').onsubmit = (e) => {
+            e.preventDefault();
+            const idx = document.getElementById('payClientIndex').value;
+            const amount = parseInt(document.getElementById('payAmount').value);
+            const typeValue = document.getElementById('payType').value;
+            const typeText = document.getElementById('payType').options[document.getElementById('payType').selectedIndex].text;
+            const nextDate = document.getElementById('nextBillingDate').value;
+
+            customers[idx].totalPaid += amount;
+            customers[idx].nextBilling = nextDate;
+            customers[idx].history.unshift({
+                date: document.getElementById('payDate').value,
+                amount: amount,
+                cycle: typeText
+            });
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+            payModal.hide();
+            renderClients();
+        };
+
+        function deleteClient(idx) {
+            if(confirm('Revoke access and archive this client?')) {
+                customers.splice(idx, 1);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(customers));
+                renderClients();
+            }
+        }
+
+        const histModal = new bootstrap.Modal(document.getElementById('historyModal'));
+        function viewHistory(idx) {
+            const client = customers[idx];
+            document.getElementById('historyTitle').innerText = `${client.name} - Payment History`;
+            const hBody = document.getElementById('historyListBody');
+            hBody.innerHTML = '';
+            
+            if(!client.history || client.history.length === 0) {
+                hBody.innerHTML = '<tr><td colspan="3" class="text-center opacity-50 py-4">No payment records found</td></tr>';
+            } else {
+                client.history.forEach(h => {
+                    const hTr = document.createElement('tr');
+                    hTr.innerHTML = `
+                        <td>${new Date(h.date).toLocaleDateString('en-IN')}</td>
+                        <td>${h.cycle}</td>
+                        <td class="text-end text-gold fw-bold">₹${h.amount.toLocaleString('en-IN')}</td>
+                    `;
+                    hBody.appendChild(hTr);
+                });
+            }
+            histModal.show();
+        }
+
+        renderClients();
+    </script>
+</body>
+</html>

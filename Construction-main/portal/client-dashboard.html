@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PANNAMA | Client Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container-fluid p-0">
+        <header class="p-4 d-flex justify-content-between align-items-center border-bottom border-secondary" style="background: #0a0a0f;">
+            <div class="nav-logo m-0">PANNAMA <span>CLIENT</span></div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end">
+                    <div class="fw-bold" id="client-name-top">Loading...</div>
+                    <div class="small opacity-50" id="client-id-top">ID: 000</div>
+                </div>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="p-5">
+            <div class="row g-5 justify-content-center">
+                <div class="col-lg-10">
+                    <div class="glass-card p-5 mb-5 overflow-hidden position-relative">
+
+                        <h4 class="text-gold mb-4" style="font-family: var(--font-heading);">INVESTMENT SUMMARY</h4>
+                        <div class="row text-center mt-5">
+                            <div class="col-md-6 border-end border-secondary">
+                                <div class="opacity-50 small mb-1">TOTAL CAPITAL PAID</div>
+                                <div class="h1 text-gold fw-bold" id="total-paid">₹0</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="opacity-50 small mb-1">PROJECT NAME</div>
+                                <div class="h2 text-white fw-bold mt-1">PANNAMA ELEGANCE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-4 opacity-50 small letter-spacing-2">TRANSACTION HISTORY</h5>
+                    <div class="glass-card">
+                        <div class="table-responsive">
+                            <table class="table custom-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>DATE</th>
+                                        <th>CYCLE</th>
+                                        <th class="text-end">AMOUNT</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-body">
+                                    <!-- Dynamic -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const KEYS = { CUSTOMERS: 'pannama_customers_final', CURRENT_CLIENT: 'pannama_current_client' };
+        
+        const current = JSON.parse(sessionStorage.getItem(KEYS.CURRENT_CLIENT));
+        if(!current) location.href = 'client-login.html';
+
+        document.getElementById('client-name-top').innerText = current.name;
+        document.getElementById('client-id-top').innerText = 'ID: ' + current.id;
+        document.getElementById('total-paid').innerText = '₹' + (current.totalPaid || 0).toLocaleString('en-IN');
+
+        const body = document.getElementById('history-body');
+        if(current.history && current.history.length > 0) {
+            current.history.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${new Date(h.date).toLocaleDateString()}</td>
+                    <td>${h.cycle}</td>
+                    <td class="text-end text-gold fw-bold">₹${parseInt(h.amount).toLocaleString('en-IN')}</td>
+                `;
+                body.appendChild(tr);
+            });
+        } else {
+            body.innerHTML = '<tr><td colspan="3" class="text-center opacity-30 py-5">No transaction history found</td></tr>';
+        }
+
+        function logout() {
+            sessionStorage.removeItem(KEYS.CURRENT_CLIENT);
+            location.href = 'client-login.html';
+        }
+    </script>
+</body>
+</html>
